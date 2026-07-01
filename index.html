@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HGZY K3 AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Rajdhani',sans-serif;-webkit-tap-highlight-color:transparent}
+        #bgFrame{position:absolute;top:0;left:0;width:100vw;height:100vh;border:none;z-index:1}
+
+        @keyframes rainbowBorder{
+            0%{border-color:#ff00ff;box-shadow:0 0 16px rgba(255,0,255,.5),0 0 40px rgba(255,0,255,.12),inset 0 0 16px rgba(255,0,255,.08)}
+            16%{border-color:#ff3366;box-shadow:0 0 16px rgba(255,51,102,.5),0 0 40px rgba(255,51,102,.12),inset 0 0 16px rgba(255,51,102,.08)}
+            33%{border-color:#00eaff;box-shadow:0 0 16px rgba(0,234,255,.5),0 0 40px rgba(0,234,255,.12),inset 0 0 16px rgba(0,234,255,.08)}
+            50%{border-color:#00ff66;box-shadow:0 0 16px rgba(0,255,102,.5),0 0 40px rgba(0,255,102,.12),inset 0 0 16px rgba(0,255,102,.08)}
+            66%{border-color:#ffcc00;box-shadow:0 0 16px rgba(255,204,0,.5),0 0 40px rgba(255,204,0,.12),inset 0 0 16px rgba(255,204,0,.08)}
+            83%{border-color:#ff6600;box-shadow:0 0 16px rgba(255,102,0,.5),0 0 40px rgba(255,102,0,.12),inset 0 0 16px rgba(255,102,0,.08)}
+            100%{border-color:#ff00ff;box-shadow:0 0 16px rgba(255,0,255,.5),0 0 40px rgba(255,0,255,.12),inset 0 0 16px rgba(255,0,255,.08)}
+        }
+        @keyframes spinCircle{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+        @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+        @keyframes revealFlash{
+            0%{opacity:0;transform:scale(.4) rotateX(40deg);filter:blur(10px)}
+            40%{opacity:1;transform:scale(1.1) rotateX(-5deg);filter:blur(0)}
+            70%{transform:scale(.96) rotateX(2deg)}
+            100%{opacity:1;transform:scale(1) rotateX(0);filter:blur(0)}
+        }
+        @keyframes shimmerSweep{0%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+        @keyframes timerGlow{
+            0%,100%{text-shadow:0 0 10px rgba(255,204,0,.45),0 0 20px rgba(255,204,0,.15)}
+            50%{text-shadow:0 0 18px rgba(255,204,0,.7),0 0 40px rgba(255,204,0,.25)}
+        }
+        @keyframes scanline{0%{top:-2px}100%{top:100%}}
+        @keyframes fadeInUp{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+        @keyframes numberPop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+        @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes borderGlowPulse{0%,100%{opacity:.4}50%{opacity:1}}
+        @keyframes floatParticle{0%{transform:translateY(0) scale(1);opacity:.5}50%{transform:translateY(-6px) scale(1.15);opacity:1}100%{transform:translateY(0) scale(1);opacity:.5}}
+        @keyframes colorCycle{0%{color:#ff3366}16%{color:#ff6600}33%{color:#ffcc00}50%{color:#00ff66}66%{color:#00eaff}83%{color:#ff00ff}100%{color:#ff3366}}
+        @keyframes bgPulse{0%,100%{background-position:0% 0%}50%{background-position:100% 100%}}
+
+        #panel{
+            position:fixed;z-index:999999;top:8%;left:10px;width:205px;
+            background:linear-gradient(145deg,rgba(8,4,28,.96),rgba(2,8,20,.98) 40%,rgba(5,2,18,.97));
+            background-size:200% 200%;
+            animation:rainbowBorder 5s linear infinite,bgPulse 8s ease-in-out infinite;
+            border-radius:20px;padding:0;border:2px solid #ff00ff;
+            touch-action:none;cursor:grab;color:#fff;text-align:center;
+            backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            display:none;user-select:none;overflow:hidden;
+            box-shadow:0 8px 32px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04),inset 0 1px 0 rgba(255,255,255,.05)
+        }
+        #panel:active{cursor:grabbing}
+        #panel::after{
+            content:'';position:absolute;left:0;width:100%;height:2px;
+            background:linear-gradient(90deg,transparent,rgba(0,234,255,.06),rgba(255,0,255,.1),rgba(0,255,102,.06),transparent);
+            animation:scanline 4s linear infinite;pointer-events:none;z-index:10
+        }
+        #panel::before{
+            content:'';position:absolute;top:2px;left:2px;right:2px;bottom:2px;
+            border-radius:18px;border:1px solid rgba(255,255,255,.03);pointer-events:none;z-index:10
+        }
+
+        .p-inner{padding:14px 12px 5px;position:relative}
+        .top-bar{
+            position:absolute;top:0;left:18%;right:18%;height:2.5px;border-radius:0 0 3px 3px;
+            background:linear-gradient(90deg,#ff3366,#ff6600,#ffcc00,#00ff66,#00eaff,#ff00ff);
+            background-size:300% 100%;animation:gradientShift 4s ease-in-out infinite;
+            box-shadow:0 2px 10px rgba(255,0,255,.25)
+        }
+
+        .c-particles{position:absolute;top:6px;left:6px;right:6px;bottom:6px;pointer-events:none;z-index:0}
+        .c-particles span{position:absolute;width:2.5px;height:2.5px;border-radius:50%;animation:floatParticle 3s ease-in-out infinite}
+        .c-particles span:nth-child(1){top:0;left:18%;background:#ff3366;box-shadow:0 0 5px #ff3366}
+        .c-particles span:nth-child(2){top:0;right:18%;background:#00eaff;box-shadow:0 0 5px #00eaff;animation-delay:.5s}
+        .c-particles span:nth-child(3){bottom:8px;left:12%;background:#00ff66;box-shadow:0 0 5px #00ff66;animation-delay:1s}
+        .c-particles span:nth-child(4){bottom:8px;right:12%;background:#ffcc00;box-shadow:0 0 5px #ffcc00;animation-delay:1.5s}
+        .c-particles span:nth-child(5){top:45%;left:4%;background:#ff6600;box-shadow:0 0 5px #ff6600;animation-delay:2s;width:2px;height:2px}
+        .c-particles span:nth-child(6){top:45%;right:4%;background:#ff00ff;box-shadow:0 0 5px #ff00ff;animation-delay:2.5s;width:2px;height:2px}
+
+        /* LOGIN */
+        .st-login{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;z-index:1}
+        .l-logo{
+            font-family:'Orbitron',monospace;font-size:12px;font-weight:800;
+            background:linear-gradient(135deg,#00eaff,#ff00ff 50%,#ffcc00);
+            background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+            background-clip:text;letter-spacing:2.5px;text-transform:uppercase;animation:gradientShift 3s ease-in-out infinite
+        }
+        .l-sub{font-size:8px;color:rgba(255,255,255,.3);letter-spacing:1.5px;font-family:'Orbitron',monospace}
+        .l-ver{font-family:'Orbitron',monospace;font-size:7px;color:#ff6600;letter-spacing:1px;padding:2px 8px;border-radius:8px;border:1px solid rgba(255,102,0,.25);background:rgba(255,102,0,.06)}
+        .l-div{width:65%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,102,0,.25),rgba(255,0,255,.25),rgba(0,234,255,.25),transparent)}
+        .l-input-w{width:100%;position:relative}
+        .l-input-w::before{
+            content:'';position:absolute;inset:-1px;border-radius:10px;
+            background:linear-gradient(135deg,rgba(0,234,255,.2),rgba(255,0,255,.2),rgba(0,255,102,.2));
+            z-index:-1;opacity:0;transition:opacity .3s
+        }
+        .l-input-w:focus-within::before{opacity:1}
+        .l-input{
+            width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+            color:#fff;padding:9px 12px;border-radius:10px;outline:none;text-align:center;
+            font-size:13px;font-family:'Orbitron',monospace;letter-spacing:3px;
+            transition:border-color .3s,box-shadow .3s,background .3s
+        }
+        .l-input::placeholder{color:rgba(255,255,255,.15);letter-spacing:1.5px;font-size:9px}
+        .l-input:focus{border-color:rgba(0,234,255,.45);box-shadow:0 0 16px rgba(0,234,255,.12),inset 0 0 16px rgba(0,234,255,.02);background:rgba(255,255,255,.06)}
+        .l-btn{
+            width:100%;
+            background:linear-gradient(135deg,#ff3366,#ff00ff 25%,#00eaff 50%,#00ff66 75%,#ffcc00);
+            background-size:300% 100%;border:none;padding:10px 14px;color:#fff;border-radius:10px;
+            font-weight:700;font-size:11px;font-family:'Orbitron',monospace;letter-spacing:2.5px;
+            cursor:pointer;transition:transform .15s,box-shadow .3s;text-transform:uppercase;
+            position:relative;overflow:hidden;animation:gradientShift 4s ease-in-out infinite
+        }
+        .l-btn::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:shimmerSweep 3s ease-in-out infinite}
+        .l-btn:hover{transform:translateY(-1px);box-shadow:0 5px 24px rgba(255,0,255,.25)}
+        .l-btn:active{transform:scale(.97)}
+        .l-err{font-size:10px;color:#ff3366;font-weight:600;letter-spacing:.8px;min-height:14px}
+        .l-hint{font-size:8px;color:rgba(255,255,255,.18);letter-spacing:.8px;font-family:'Orbitron',monospace}
+
+        /* CONNECTING */
+        .st-conn{display:none;flex-direction:column;align-items:center;justify-content:center;padding:35px 0 24px;gap:14px}
+        .st-conn.active{display:flex}
+        .cs-outer{position:relative;display:flex;align-items:center;justify-content:center}
+        .cs-spin{width:42px;height:42px;border-radius:50%;border:2.5px solid rgba(255,255,255,.05);border-top-color:#ff3366;border-right-color:#00eaff;border-bottom-color:#ffcc00;border-left-color:#00ff66;animation:spinCircle .9s linear infinite;filter:drop-shadow(0 0 6px rgba(255,0,255,.25))}
+        .cs-inner{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.03);border-top-color:#ff00ff;animation:spinCircle 1.4s linear infinite reverse;position:absolute}
+        .cs-text{font-family:'Orbitron',monospace;font-size:10px;color:rgba(255,255,255,.55);letter-spacing:2.5px;text-transform:uppercase;animation:colorCycle 4s linear infinite}
+        .cs-sub{font-size:8px;color:rgba(255,255,255,.2);letter-spacing:.8px;font-family:'Orbitron',monospace}
+        .cs-dots{display:flex;gap:4px}
+        .cs-dots span{width:4px;height:4px;border-radius:50%;animation:pulseDot 1s ease-in-out infinite}
+        .cs-dots span:nth-child(1){background:#ff3366;box-shadow:0 0 5px #ff3366}
+        .cs-dots span:nth-child(2){background:#00eaff;box-shadow:0 0 5px #00eaff;animation-delay:.2s}
+        .cs-dots span:nth-child(3){background:#00ff66;box-shadow:0 0 5px #00ff66;animation-delay:.4s}
+
+        /* SIGNAL STATE */
+        .st-sig{display:none;flex-direction:column;gap:0}
+        .st-sig.active{display:flex;animation:fadeInUp .35s ease-out}
+
+        .sv-bar{display:flex;align-items:center;justify-content:center;gap:5px;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,.05);position:relative}
+        .sv-bar::after{content:'';position:absolute;bottom:-1px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,51,102,.25),rgba(0,234,255,.25),transparent);animation:borderGlowPulse 3s ease-in-out infinite}
+        .sv-dot{width:6px;height:6px;border-radius:50%;background:#00ff66;box-shadow:0 0 6px rgba(0,255,102,.5);animation:pulseDot 1.5s ease-in-out infinite;flex-shrink:0}
+        .sv-lbl{font-family:'Orbitron',monospace;font-size:8px;font-weight:600;color:#00ff66;letter-spacing:2px;text-transform:uppercase}
+        .sv-div{width:1px;height:8px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.15),transparent)}
+        .sv-name{font-family:'Orbitron',monospace;font-size:7px;color:rgba(255,255,255,.35);letter-spacing:1px}
+        .sv-ping{font-family:'Orbitron',monospace;font-size:6.5px;color:#ff6600;letter-spacing:.8px;padding:1px 5px;border-radius:5px;border:1px solid rgba(255,102,0,.2);background:rgba(255,102,0,.05)}
+
+        .clk{font-family:'Orbitron',monospace;font-size:14px;font-weight:500;background:linear-gradient(135deg,#00ff66,#00eaff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;margin-bottom:10px;filter:drop-shadow(0 0 6px rgba(0,255,102,.15))}
+
+        .tmr-sec{margin-bottom:10px}
+        .tmr-lbl{font-family:'Orbitron',monospace;font-size:7px;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+        .tmr-val{font-family:'Orbitron',monospace;font-size:38px;font-weight:900;background:linear-gradient(180deg,#ffcc00,#ff6600);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;animation:timerGlow 2.5s ease-in-out infinite;transition:opacity .3s;filter:drop-shadow(0 0 10px rgba(255,204,0,.25))}
+        .tmr-val.pop{animation:numberPop .2s ease-out}
+        .tmr-val.dimmed{opacity:.15;animation:none;filter:none}
+        .tmr-track{width:100%;height:2.5px;border-radius:3px;background:rgba(255,255,255,.05);margin-top:5px;overflow:hidden}
+        .tmr-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#ff3366,#ff6600,#ffcc00,#00ff66,#00eaff);background-size:200% 100%;animation:gradientShift 3s ease-in-out infinite;transition:width .25s ease-out;box-shadow:0 0 6px rgba(0,234,255,.25)}
+
+        .sp-ov{display:none;flex-direction:column;align-items:center;justify-content:center;padding:14px 0 6px;gap:8px}
+        .sp-ov.active{display:flex}
+        .sp-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+        .sp-outer{width:46px;height:46px;border-radius:50%;border:3px solid rgba(255,255,255,.04);border-top-color:#ff3366;border-right-color:#00eaff;border-bottom-color:#ffcc00;border-left-color:#00ff66;animation:spinCircle .7s linear infinite;filter:drop-shadow(0 0 8px rgba(0,234,255,.25))}
+        .sp-inner{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.03);border-left-color:#ff00ff;border-right-color:#ff6600;animation:spinCircle 1.2s linear infinite reverse;position:absolute}
+        .sp-lbl{font-family:'Orbitron',monospace;font-size:8px;color:rgba(255,255,255,.45);letter-spacing:2.5px;text-transform:uppercase;animation:colorCycle 3s linear infinite}
+        .sp-dots{display:flex;gap:4px;margin-top:1px}
+        .sp-dots span{width:3.5px;height:3.5px;border-radius:50%;animation:pulseDot 1s ease-in-out infinite}
+        .sp-dots span:nth-child(1){background:#ff3366;box-shadow:0 0 5px #ff3366}
+        .sp-dots span:nth-child(2){background:#ffcc00;box-shadow:0 0 5px #ffcc00;animation-delay:.2s}
+        .sp-dots span:nth-child(3){background:#00eaff;box-shadow:0 0 5px #00eaff;animation-delay:.4s}
+
+        .sc-wrap{display:none}
+        .sc-wrap.active{display:block}
+        .sc-card{
+            background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.008));
+            border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:10px 12px 8px;
+            position:relative;overflow:hidden
+        }
+        .sc-card::before{content:'';position:absolute;top:0;left:-120%;width:80%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);animation:shimmerSweep 4s ease-in-out infinite;pointer-events:none}
+        .sc-card::after{content:'';position:absolute;left:0;top:12%;bottom:12%;width:2.5px;border-radius:0 3px 3px 0;background:linear-gradient(180deg,#ff3366,#ff00ff,#00eaff);box-shadow:0 0 8px rgba(255,0,255,.25)}
+
+        .sc-rlbl{font-family:'Orbitron',monospace;font-size:7px;color:rgba(255,255,255,.25);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
+        .sc-main{font-family:'Orbitron',monospace;font-size:25px;font-weight:900;line-height:1.15;transition:color .3s,text-shadow .3s;padding-left:6px}
+        .sc-main.t-big{color:#ff3366;text-shadow:0 0 14px rgba(255,51,102,.5),0 0 30px rgba(255,51,102,.15)}
+        .sc-main.t-small{color:#00eaff;text-shadow:0 0 14px rgba(0,234,255,.5),0 0 30px rgba(0,234,255,.15)}
+        .sc-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,102,0,.2),rgba(255,0,255,.2),rgba(0,234,255,.2),transparent);margin:8px 0}
+        .sc-sub{font-family:'Orbitron',monospace;font-size:19px;font-weight:700;transition:color .3s,text-shadow .3s;padding-left:6px}
+        .sc-sub.t-odd{color:#ffcc00;text-shadow:0 0 12px rgba(255,204,0,.4),0 0 25px rgba(255,204,0,.12)}
+        .sc-sub.t-even{color:#00ff66;text-shadow:0 0 12px rgba(0,255,102,.4),0 0 25px rgba(0,255,102,.12)}
+
+        .sc-conf{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:6px}
+        .sc-clbl{font-family:'Orbitron',monospace;font-size:6px;color:rgba(255,255,255,.2);letter-spacing:1px}
+        .sc-cdots{display:flex;gap:2.5px}
+        .sc-cdots span{width:7px;height:3.5px;border-radius:2px;transition:opacity .3s}
+        .sc-cdots span:nth-child(1){background:#ff3366;box-shadow:0 0 3px rgba(255,51,102,.4)}
+        .sc-cdots span:nth-child(2){background:#ff6600;box-shadow:0 0 3px rgba(255,102,0,.4)}
+        .sc-cdots span:nth-child(3){background:#ffcc00;box-shadow:0 0 3px rgba(255,204,0,.4)}
+        .sc-cdots span:nth-child(4){background:#00ff66;box-shadow:0 0 3px rgba(0,255,102,.4)}
+        .sc-cdots span:nth-child(5){background:#00eaff;box-shadow:0 0 3px rgba(0,234,255,.4)}
+
+        .reveal-anim{animation:revealFlash .5s cubic-bezier(.22,1,.36,1) forwards}
+
+        .cy-foot{margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px}
+        .cy-tag{font-family:'Orbitron',monospace;font-size:7px;color:rgba(255,255,255,.18);letter-spacing:1px}
+        .cy-num{font-family:'Orbitron',monospace;font-size:8px;color:#ff6600;font-weight:600;letter-spacing:.8px}
+        .cy-time{font-family:'Orbitron',monospace;font-size:7px;color:rgba(255,255,255,.18);letter-spacing:.8px;margin-left:auto}
+
+        .btm-accent{margin-top:5px;height:2px;border-radius:2px;background:linear-gradient(90deg,#ff3366,#ff6600,#ffcc00,#00ff66,#00eaff,#ff00ff,#ff3366);background-size:300% 100%;animation:gradientShift 4s ease-in-out infinite;opacity:.35}
+
+        @media(max-width:360px){
+            #panel{width:180px;border-radius:17px}
+            .p-inner{padding:12px 10px 4px}
+            .tmr-val{font-size:32px}
+            .sc-main{font-size:22px}
+            .sc-sub{font-size:16px}
+            .clk{font-size:12px}
+        }
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+    </style>
+</head>
+<body>
+
+<iframe id="bgFrame" src="https://hgnice.cc/#/register?invitationCode=511711502736" allow="autoplay; encrypted-media" loading="eager"></iframe>
+
+<div id="panel" role="dialog" aria-label="Signal Panel">
+    <div class="top-bar"></div>
+    <div class="c-particles"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="p-inner">
+
+        <!-- LOGIN STATE -->
+        <div class="st-login" id="stLogin">
+            <div class="l-logo">HGZY K3 AI</div>
+            <div class="l-sub">PRO SIGNAL SYSTEM</div>
+            <div class="l-ver">v3.2 UPDATE</div>
+            <div class="l-div"></div>
+            <div class="l-input-w">
+                <input type="password" id="passInput" class="l-input" placeholder="ENTER KEY" autocomplete="off" maxlength="20" aria-label="Password input">
+            </div>
+            <button id="loginBtn" class="l-btn" aria-label="Unlock panel">UNLOCK</button>
+            <div class="l-err" id="loginErr">&nbsp;</div>
+            <div class="l-hint">AUTHORIZED ACCESS ONLY</div>
+        </div>
+
+        <!-- CONNECTING STATE -->
+        <div class="st-conn" id="stConn">
+            <div class="cs-outer">
+                <div class="cs-spin"></div>
+                <div class="cs-inner"></div>
+            </div>
+            <div class="cs-text">CONNECTING</div>
+            <div class="cs-sub">IND-SERVER | ASIA/KOLKATA</div>
+            <div class="cs-dots"><span></span><span></span><span></span></div>
+        </div>
+
+        <!-- SIGNAL STATE -->
+        <div class="st-sig" id="stSig">
+            <div class="sv-bar">
+                <div class="sv-dot" id="liveDot"></div>
+                <span class="sv-lbl">LIVE</span>
+                <div class="sv-div"></div>
+                <span class="sv-name">IND-SERVER</span>
+                <div class="sv-div"></div>
+                <span class="sv-ping" id="svPing">--ms</span>
+            </div>
+            <div class="clk" id="clkDisp">00:00:00</div>
+            <div class="tmr-sec">
+                <div class="tmr-lbl">NEXT CYCLE</div>
+                <div class="tmr-val" id="tmrVal">00</div>
+                <div class="tmr-track"><div class="tmr-fill" id="tmrFill" style="width:0%"></div></div>
+            </div>
+            <div class="sp-ov" id="spOverlay">
+                <div class="sp-wrap">
+                    <div class="sp-outer"></div>
+                    <div class="sp-inner"></div>
+                </div>
+                <div class="sp-lbl">ANALYZING</div>
+                <div class="sp-dots"><span></span><span></span><span></span></div>
+            </div>
+            <div class="sc-wrap active" id="scWrap">
+                <div class="sc-card" id="scCard">
+                    <div class="sc-rlbl">SIZE PREDICTION</div>
+                    <div class="sc-main" id="szVal">---</div>
+                    <div class="sc-divider"></div>
+                    <div class="sc-rlbl">PARITY PREDICTION</div>
+                    <div class="sc-sub" id="prVal">---</div>
+                    <div class="sc-conf">
+                        <span class="sc-clbl">AI CONFIDENCE</span>
+                        <div class="sc-cdots" id="confDots">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cy-foot">
+                <span class="cy-tag">CYCLE</span>
+                <span class="cy-num" id="cyNum">#000</span>
+                <span class="cy-time" id="cyTime">--:--</span>
+            </div>
+            <div class="btm-accent"></div>
+        </div>
+
+    </div>
+</div>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBPBQOeApFZQwGX8G4mZxhY5C2jjN6VWmU",
+  authDomain: "dkwin-panel-ai.firebaseapp.com",
+  databaseURL: "https://dkwin-panel-ai-default-rtdb.firebaseio.com",
+  projectId: "dkwin-panel-ai",
+  storageBucket: "dkwin-panel-ai.firebasestorage.app",
+  messagingSenderId: "925573387640",
+  appId: "1:925573387640:web:8faf648b0b89933c89e48d",
+  measurementId: "G-X3ZFCRWEH8"
+};
+
+<script>
+(function(){
+    "use strict";
+
+    /* ========== CONFIGURATION ========== */
+    var CFG = {
+        password: "VIP100",
+        spinStart: 56,
+        fetchTimeout: 4000,
+        tickMs: 200,
+        dataInterval: 15000,
+        graceMs: 8000,
+        retryMs: 3000,
+        endpoints: [
+            "https://timeapi.io/api/Time/current/zone?timeZone=Asia/Kolkata",
+            "https://worldtimeapi.org/api/timezone/Asia/Kolkata"
+        ]
+    };
+
+    /* ========== DOM REFS ========== */
+    var panel      = document.getElementById("panel");
+    var stLogin    = document.getElementById("stLogin");
+    var stConn     = document.getElementById("stConn");
+    var stSig      = document.getElementById("stSig");
+    var passInput  = document.getElementById("passInput");
+    var loginBtn   = document.getElementById("loginBtn");
+    var loginErr   = document.getElementById("loginErr");
+    var clkDisp    = document.getElementById("clkDisp");
+    var tmrVal     = document.getElementById("tmrVal");
+    var tmrFill    = document.getElementById("tmrFill");
+    var spOverlay  = document.getElementById("spOverlay");
+    var scWrap     = document.getElementById("scWrap");
+    var scCard     = document.getElementById("scCard");
+    var szVal      = document.getElementById("szVal");
+    var prVal      = document.getElementById("prVal");
+    var cyNum      = document.getElementById("cyNum");
+    var cyTime     = document.getElementById("cyTime");
+    var svPing     = document.getElementById("svPing");
+    var confDots   = document.getElementById("confDots");
+
+    /* ========== APP STATE ========== */
+    var S = {
+        phase: "hidden",
+        loggedIn: false,
+        signal: null,
+        lastMin: -1,
+        lastData: 0,
+        offset: 0,
+        ping: 0,
+        tickId: null,
+        dataId: null,
+        retryId: null,
+        prevTmr: ""
+    };
+
+    /* ========== DETERMINISTIC HASH ========== */
+    function hash(n){
+        var h = n|0;
+        h = ((h>>16)^h)*0x45d9f3b|0;
+        h = ((h>>16)^h)*0x45d9f3b|0;
+        return (h>>16)^h;
+    }
+
+    function makeSignal(unix){
+        var mk = Math.floor(unix/60);
+        var h = hash(mk);
+        return {
+            size: (h&1) ? "BIG" : "SMALL",
+            parity: ((h>>1)&1) ? "ODD" : "EVEN",
+            conf: (Math.abs(h>>2)%5)+1,
+            mk: mk
+        };
+    }
+
+    /* ========== SERVER TIME ========== */
+    function serverUnix(){
+        return Math.floor((Date.now()+S.offset)/1000);
+    }
+
+    /* ========== FETCH FROM SERVER ========== */
+    function fetchTime(){
+        return new Promise(function(ok,no){
+            var eps = CFG.endpoints.slice();
+            tryOne(0);
+            function tryOne(i){
+                if(i>=eps.length){no(new Error("ALL_FAIL"));return;}
+                var ctrl = new AbortController();
+                var t0 = performance.now();
+                var tid = setTimeout(function(){ctrl.abort();tryOne(i+1);},CFG.fetchTimeout);
+                fetch(eps[i],{signal:ctrl.signal,cache:"no-store",headers:{"Accept":"application/json"}})
+                .then(function(r){clearTimeout(tid);if(!r.ok){tryOne(i+1);return;}return r.json();})
+                .then(function(d){
+                    if(!d){tryOne(i+1);return;}
+                    var ds = d.dateTime||d.datetime||"";
+                    var ux = d.unixTime||d.unixtime||0;
+                    if(!ux&&ds) ux = Math.floor(new Date(ds).getTime()/1000);
+                    if(!ux){tryOne(i+1);return;}
+                    S.ping = Math.round(performance.now()-t0);
+                    S.offset = (ux*1000)-Date.now();
+                    S.lastData = Date.now();
+                    ok({unix:ux,ping:S.ping});
+                })
+                .catch(function(){clearTimeout(tid);tryOne(i+1);});
+            }
+        });
+    }
+
+    /* ========== PING DISPLAY ========== */
+    function showPing(){
+        var p = S.ping;
+        svPing.textContent = p?(p+"ms"):"--ms";
+        if(p<200){
+            svPing.style.color="#00ff66";
+            svPing.style.borderColor="rgba(0,255,102,.25)";
+            svPing.style.background="rgba(0,255,102,.06)";
+        }else if(p<500){
+            svPing.style.color="#ffcc00";
+            svPing.style.borderColor="rgba(255,204,0,.25)";
+            svPing.style.background="rgba(255,204,0,.06)";
+        }else{
+            svPing.style.color="#ff3366";
+            svPing.style.borderColor="rgba(255,51,102,.25)";
+            svPing.style.background="rgba(255,51,102,.06)";
+        }
+    }
+
+    /* ========== PHASE CONTROL ========== */
+    function setPhase(ph){
+        S.phase = ph;
+        if(ph==="hidden"){
+            panel.style.display="none";
+            stLogin.style.display="none";
+            stConn.classList.remove("active");
+            stSig.classList.remove("active");
+            stopTick();stopData();return;
+        }
+        panel.style.display="block";
+        if(ph==="login"){
+            stLogin.style.display="flex";
+            stConn.classList.remove("active");
+            stSig.classList.remove("active");
+            stopTick();stopData();return;
+        }
+        if(ph==="connecting"){
+            stLogin.style.display="none";
+            stConn.classList.add("active");
+            stSig.classList.remove("active");
+            stopTick();stopData();return;
+        }
+        if(ph==="signal"){
+            stLogin.style.display="none";
+            stConn.classList.remove("active");
+            stSig.classList.add("active");
+            startTick();startData();return;
+        }
+    }
+
+    /* ========== TICK LOOP ========== */
+    function startTick(){if(S.tickId)return;S.tickId=setInterval(tick,CFG.tickMs);}
+    function stopTick(){if(S.tickId){clearInterval(S.tickId);S.tickId=null;}}
+
+    function tick(){
+        var ux = serverUnix();
+        var d = new Date(ux*1000);
+        var sec=d.getSeconds(), min=d.getMinutes(), hr=d.getHours();
+
+        /* Clock */
+        clkDisp.textContent = pad(hr)+":"+pad(min)+":"+pad(sec);
+
+        /* Timer */
+        var rem = 60-sec;
+        var ts = pad(rem);
+        if(ts!==S.prevTmr){
+            tmrVal.textContent=ts;
+            tmrVal.classList.remove("pop");
+            void tmrVal.offsetWidth;
+            tmrVal.classList.add("pop");
+            S.prevTmr=ts;
+        }
+        tmrFill.style.width=(rem/60*100)+"%";
+
+        /* New minute check */
+        var cm = Math.floor(ux/60);
+        if(cm!==S.lastMin){
+            S.lastMin=cm;
+            var sig = makeSignal(ux);
+            S.signal=sig;
+            revealSig(sig,d);
+        }
+
+        /* Spinner vs Signal */
+        if(sec>=CFG.spinStart){
+            spOverlay.classList.add("active");
+            scWrap.classList.remove("active");
+            tmrVal.classList.add("dimmed");
+        }else{
+            spOverlay.classList.remove("active");
+            scWrap.classList.add("active");
+            tmrVal.classList.remove("dimmed");
+        }
+    }
+
+    function pad(n){return String(n).padStart(2,"0");}
+
+    /* ========== REVEAL SIGNAL ========== */
+    function revealSig(sig,d){
+        szVal.textContent = sig.size;
+        szVal.className = "sc-main "+(sig.size==="BIG"?"t-big":"t-small");
+
+        prVal.textContent = sig.parity;
+        prVal.className = "sc-sub "+(sig.parity==="ODD"?"t-odd":"t-even");
+
+        /* Confidence dots */
+        var dots = confDots.children;
+        for(var i=0;i<dots.length;i++){
+            dots[i].style.opacity = i<sig.conf ? "1" : "0.12";
+        }
+
+        /* Cycle info */
+        cyNum.textContent = "#"+String(sig.mk%1000).padStart(3,"0");
+        cyTime.textContent = pad(d.getHours())+":"+pad(d.getMinutes());
+
+        /* Reveal animation */
+        scCard.classList.remove("reveal-anim");
+        void scCard.offsetWidth;
+        scCard.classList.add("reveal-anim");
+    }
+
+    /* ========== DATA HEALTH LOOP ========== */
+    function startData(){if(S.dataId)return;S.dataId=setInterval(dataCheck,CFG.dataInterval);}
+    function stopData(){if(S.dataId){clearInterval(S.dataId);S.dataId=null;}}
+
+    function dataCheck(){
+        if(!navigator.onLine){goOffline();return;}
+        fetchTime().then(function(){showPing();S.lastData=Date.now();}).catch(function(){
+            if(Date.now()-S.lastData>CFG.graceMs) goOffline();
+        });
+    }
+
+    function goOffline(){
+        setPhase("hidden");
+        scheduleRetry();
+    }
+
+    function scheduleRetry(){
+        if(S.retryId) return;
+        S.retryId = setTimeout(function(){S.retryId=null;tryReconnect();},CFG.retryMs);
+    }
+
+    function tryReconnect(){
+        if(!navigator.onLine){scheduleRetry();return;}
+        fetchTime().then(function(){
+            showPing();S.lastData=Date.now();
+            if(S.loggedIn){
+                setPhase("connecting");
+                setTimeout(function(){setPhase("signal");},1800);
+            }else{
+                setPhase("login");
+            }
+        }).catch(function(){scheduleRetry();});
+    }
+
+    /* ========== LOGIN ========== */
+    function handleLogin(){
+        var pwd = passInput.value.trim();
+        if(pwd===CFG.password){
+            S.loggedIn=true;
+            loginErr.innerHTML="&nbsp;";
+            setPhase("connecting");
+            fetchTime().then(function(){
+                showPing();
+                var ux=serverUnix();
+                S.signal=makeSignal(ux);
+                S.lastMin=Math.floor(ux/60);
+                setTimeout(function(){setPhase("signal");},2000);
+            }).catch(function(){goOffline();});
+        }else{
+            loginErr.textContent="INVALID KEY";
+            passInput.value="";
+            passInput.focus();
+        }
+    }
+
+    /* ========== DRAG ========== */
+    var drag={on:false,sx:0,sy:0};
+    function dStart(e){
+        if(e.target.closest("input,button"))return;
+        e.preventDefault();
+        drag.on=true;
+        var pt=e.touches?e.touches[0]:e;
+        var r=panel.getBoundingClientRect();
+        drag.sx=pt.clientX-r.left;
+        drag.sy=pt.clientY-r.top;
+        panel.style.transition="none";
+        panel.style.cursor="grabbing";
+    }
+    function dMove(e){
+        if(!drag.on)return;
+        e.preventDefault();
+        var pt=e.touches?e.touches[0]:e;
+        var x=pt.clientX-drag.sx;
+        var y=pt.clientY-drag.sy;
+        x=Math.max(0,Math.min(window.innerWidth-panel.offsetWidth,x));
+        y=Math.max(0,Math.min(window.innerHeight-panel.offsetHeight,y));
+        panel.style.left=x+"px";
+        panel.style.top=y+"px";
+    }
+    function dEnd(){
+        if(!drag.on)return;
+        drag.on=false;
+        panel.style.transition="";
+        panel.style.cursor="grab";
+    }
+
+    /* ========== INIT ========== */
+    function init(){
+        loginBtn.addEventListener("click",handleLogin);
+        passInput.addEventListener("keydown",function(e){if(e.key==="Enter")handleLogin();});
+
+        panel.addEventListener("mousedown",dStart);
+        document.addEventListener("mousemove",dMove);
+        document.addEventListener("mouseup",dEnd);
+        panel.addEventListener("touchstart",dStart,{passive:false});
+        document.addEventListener("touchmove",dMove,{passive:false});
+        document.addEventListener("touchend",dEnd);
+
+        window.addEventListener("offline",function(){goOffline();});
+        window.addEventListener("online",function(){if(S.phase==="hidden")tryReconnect();});
+
+        /* First attempt - panel stays hidden until data arrives */
+        tryReconnect();
+    }
+
+    if(document.readyState==="loading"){
+        document.addEventListener("DOMContentLoaded",init);
+    }else{
+        init();
+    }
+})();
+</script>
+</body>
+</html>
