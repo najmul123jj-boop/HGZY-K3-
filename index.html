@@ -3,845 +3,370 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>HGZY VIP Signal Panel</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js">
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js">
-    </script>
+    <title>HGZY VIP 30S</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        /* ── RESET & BASE ── */
-        *,
-        *::before,
-        *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html,
-        body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background: #0a0a12;
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            height: 100%; width: 100%; overflow: hidden;
+            background: #06060c;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
+            user-select: none; -webkit-user-select: none;
         }
-
-        /* ── IFRAME (game) ── */
         #gameFrame {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            z-index: 1;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; border: none; z-index: 1;
         }
 
-        /* ── FLOATING BALL LAYER ── */
         #particleLayer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 40;
-            overflow: hidden;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 40; overflow: hidden;
         }
-
         .floating-ball {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0;
-            animation: ballFall linear forwards;
-            pointer-events: none;
+            position: absolute; border-radius: 50%; opacity: 0;
+            animation: ballFall linear forwards; pointer-events: none;
             will-change: transform, opacity;
         }
-
         @keyframes ballFall {
-            0% {
-                opacity: 0;
-                transform: translateY(-20vh) translateX(0) scale(0.3) rotate(0deg);
-            }
-            10% {
-                opacity: 0.9;
-            }
-            50% {
-                transform: translateY(50vh) translateX(var(--drift, 0px)) scale(0.95) rotate(180deg);
-                opacity: 0.8;
-            }
-            90% {
-                opacity: 0.6;
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(115vh) translateX(calc(var(--drift, 0px) * 0.7)) scale(1.2) rotate(360deg);
-            }
+            0% { opacity: 0; transform: translateY(-20vh) translateX(0) scale(0.3) rotate(0deg); }
+            10% { opacity: 0.85; }
+            50% { transform: translateY(50vh) translateX(var(--drift, 0px)) scale(0.95) rotate(180deg); opacity: 0.75; }
+            90% { opacity: 0.5; }
+            100% { opacity: 0; transform: translateY(115vh) translateX(calc(var(--drift, 0px) * 0.7)) scale(1.2) rotate(360deg); }
         }
 
-        /* ── OFFLINE BANNER ── */
         #offlineBanner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+            position: fixed; top: 0; left: 0; width: 100%;
             background: linear-gradient(90deg, #ff0040, #ff6600, #ff0040);
-            background-size: 200% 100%;
-            animation: bannerPulse 1.5s infinite linear;
-            color: #fff;
-            text-align: center;
-            padding: 7px 0;
-            font-size: 12px;
-            font-weight: 800;
-            z-index: 10001;
-            letter-spacing: 1.5px;
-            display: none;
-            text-transform: uppercase;
+            background-size: 200% 100%; animation: bannerPulse 1.5s infinite linear;
+            color: #fff; text-align: center; padding: 8px 0;
+            font-size: 13px; font-weight: 800; z-index: 10001;
+            letter-spacing: 1.5px; display: none; text-transform: uppercase;
             box-shadow: 0 2px 20px rgba(255, 0, 64, 0.5);
         }
-        @keyframes bannerPulse {
-            0% {
-                background-position: 0% 50%;
-            }
-            100% {
-                background-position: 200% 50%;
-            }
-        }
+        @keyframes bannerPulse { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 
         /* ── SIGNAL PANEL ── */
         .signal-panel {
-            width: 175px;
-            background: rgba(8, 8, 20, 0.94);
-            border-radius: 22px;
-            color: #fff;
-            text-align: center;
-            padding: 14px 10px 12px;
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            cursor: grab;
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            width: 170px;
+            background: rgba(8, 8, 22, 0.97);
+            border-radius: 18px; color: #fff; text-align: center;
+            padding: 12px 10px; position: fixed; top: 80px; left: 50%;
+            transform: translateX(-50%); z-index: 9999; cursor: grab;
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            display: flex; flex-direction: column; align-items: center;
             touch-action: none;
-            border: 2.5px solid transparent;
-            background-clip: padding-box;
-            box-shadow:
-                0 0 24px rgba(0, 255, 200, 0.25),
-                0 0 60px rgba(0, 255, 200, 0.08),
-                inset 0 0 30px rgba(0, 255, 200, 0.04);
-            animation: panelBorderRotate 5s linear infinite;
-            transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                padding 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                border-radius 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                right 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            will-change: transform, width, top, right, left;
+            border: 2px solid transparent;
+            background-image: linear-gradient(rgba(8, 8, 22, 0.97), rgba(8, 8, 22, 0.97)),
+                              linear-gradient(90deg, #00ffc8, #ff00ff, #ffee00, #00ccff, #ff4466, #00ffc8);
+            background-origin: border-box; background-clip: padding-box, border-box;
+            background-size: 300% 100%;
+            animation: borderShimmer 3.5s linear infinite;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), 0 0 18px rgba(0, 255, 200, 0.1);
         }
-        .signal-panel:active {
-            cursor: grabbing;
-        }
-
-        @keyframes panelBorderRotate {
-            0% {
-                border-color: #00ffc8;
-                box-shadow: 0 0 24px rgba(0, 255, 200, 0.3), 0 0 60px rgba(0, 255, 200, 0.08), inset 0 0 30px rgba(0, 255, 200, 0.05);
-            }
-            25% {
-                border-color: #ff00ff;
-                box-shadow: 0 0 24px rgba(255, 0, 255, 0.3), 0 0 60px rgba(255, 0, 255, 0.08), inset 0 0 30px rgba(255, 0, 255, 0.05);
-            }
-            50% {
-                border-color: #00ccff;
-                box-shadow: 0 0 24px rgba(0, 204, 255, 0.3), 0 0 60px rgba(0, 204, 255, 0.08), inset 0 0 30px rgba(0, 204, 255, 0.05);
-            }
-            75% {
-                border-color: #ffee00;
-                box-shadow: 0 0 24px rgba(255, 238, 0, 0.3), 0 0 60px rgba(255, 238, 0, 0.08), inset 0 0 30px rgba(255, 238, 0, 0.05);
-            }
-            100% {
-                border-color: #00ffc8;
-                box-shadow: 0 0 24px rgba(0, 255, 200, 0.3), 0 0 60px rgba(0, 255, 200, 0.08), inset 0 0 30px rgba(0, 255, 200, 0.05);
-            }
+        .signal-panel:active { cursor: grabbing; }
+        @keyframes borderShimmer {
+            0% { background-position: 0% 50%, 0% 50%; }
+            100% { background-position: 0% 50%, 300% 50%; }
         }
 
         .panel-title {
-            font-size: 9px;
-            font-weight: 900;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #00ffc8, #ff00ff, #00ccff, #ffee00, #00ffc8);
+            font-size: 10px; font-weight: 900; margin-bottom: 10px;
+            background: linear-gradient(90deg, #00ffc8, #ff00ff, #ffee00, #00ccff, #ff4466, #00ffc8);
             background-size: 300% 100%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: titleShimmer 3s linear infinite;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            line-height: 1.4;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: titleShimmer 3.5s linear infinite;
+            text-transform: uppercase; letter-spacing: 0.8px; line-height: 1.3;
         }
-        @keyframes titleShimmer {
-            0% {
-                background-position: 0% 50%;
-            }
-            100% {
-                background-position: 300% 50%;
-            }
-        }
+        @keyframes titleShimmer { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
 
-        /* ── LOGIN SECTION ── */
-        #loginSection {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        #loginSection { width: 100%; display: flex; flex-direction: column; align-items: center; }
         #loginSection input {
-            width: 92%;
-            padding: 7px 5px;
-            background: rgba(0, 0, 0, 0.75);
-            border: 1.8px solid #00ffc8;
-            border-radius: 12px;
-            color: #fff;
-            font-size: 11px;
-            text-align: center;
-            margin-bottom: 8px;
-            outline: none;
-            box-shadow: 0 0 10px rgba(0, 255, 200, 0.25);
-            transition: box-shadow 0.3s, border-color 0.3s;
+            width: 95%; padding: 8px;
+            background: rgba(0, 0, 0, 0.85); border: 2px solid #00ffc8;
+            border-radius: 10px; color: #fff; font-size: 11px;
+            text-align: center; margin-bottom: 8px; outline: none;
         }
-        #loginSection input:focus {
-            box-shadow: 0 0 18px rgba(0, 255, 200, 0.6);
-            border-color: #00ff88;
-        }
-        #loginSection input::placeholder {
-            color: rgba(255, 255, 255, 0.25);
-            font-size: 10px;
-        }
-
+        #loginSection input::placeholder { color: rgba(255,255,255,0.35); }
         .btn-login {
-            width: 92%;
-            padding: 8px;
-            background: linear-gradient(135deg, #00ffc8, #00cc99);
-            color: #000;
-            border: none;
-            border-radius: 12px;
-            font-weight: 900;
-            cursor: pointer;
-            font-size: 10px;
-            text-transform: uppercase;
-            margin-bottom: 7px;
-            box-shadow: 0 0 16px rgba(0, 255, 200, 0.35);
-            transition: transform 0.15s, box-shadow 0.15s;
-            letter-spacing: 1.2px;
+            width: 95%; padding: 9px;
+            background: linear-gradient(135deg, #00ffc8, #00aa88);
+            color: #000; border: none; border-radius: 10px;
+            font-weight: 900; cursor: pointer; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 1px;
+            transition: transform 0.15s;
         }
-        .btn-login:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 28px rgba(0, 255, 200, 0.7);
-        }
+        .btn-login:active { transform: scale(0.96); }
 
-        .btn-telegram {
-            width: 92%;
-            padding: 7px 0;
-            background: linear-gradient(135deg, #0088cc, #00aaee);
-            color: #fff;
-            text-decoration: none;
-            font-size: 8px;
-            font-weight: 700;
-            border-radius: 12px;
-            display: inline-block;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            box-shadow: 0 0 12px rgba(0, 136, 204, 0.35);
-            transition: transform 0.15s, box-shadow 0.15s;
-        }
-        .btn-telegram:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 20px rgba(0, 136, 204, 0.6);
-        }
-
-        /* ── COMPACT MODE – TOP-RIGHT CORNER ── */
         .signal-panel.compact {
-            width: 190px !important;
-            top: 12px !important;
-            right: 12px !important;
-            left: auto !important;
-            bottom: auto !important;
-            transform: none !important;
-            padding: 14px 12px 12px !important;
-            border-radius: 22px !important;
-            box-shadow:
-                0 0 30px rgba(0, 255, 200, 0.30),
-                0 0 70px rgba(0, 255, 200, 0.10),
-                inset 0 0 30px rgba(0, 255, 200, 0.06) !important;
-            border-width: 2.5px !important;
-            animation: panelBorderRotate 5s linear infinite;
+            width: 175px !important; padding: 10px 8px !important; border-radius: 16px !important;
         }
+        .signal-panel.compact #loginSection { display: none !important; }
+        .signal-panel.compact #appSection { display: flex !important; flex-direction: column; width: 100%; }
 
-        .signal-panel.compact #loginSection {
-            display: none !important;
-        }
-        .signal-panel.compact #appSection {
-            display: flex !important;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
-        .signal-panel.compact .live-row {
-            gap: 6px;
-            margin-bottom: 7px;
-        }
-        .signal-panel.compact .wifi-icon {
-            width: 18px;
-            height: 18px;
-        }
-        .signal-panel.compact .live-badge {
-            font-size: 8px;
-            padding: 1px 8px;
-            border-radius: 6px;
-            letter-spacing: 1px;
-        }
-
-        .signal-panel.compact .period-card {
-            padding: 4px 8px;
-            border-radius: 10px;
-            margin-bottom: 5px;
-            border-width: 1.5px;
-            width: 100%;
-        }
-        .signal-panel.compact .period-label {
-            font-size: 6.5px;
-            letter-spacing: 1.2px;
-        }
-        .signal-panel.compact .period-number {
-            font-size: 16px;
-            margin-top: 1px;
-            letter-spacing: 2.5px;
-        }
-
-        .signal-panel.compact .timer-display {
-            font-size: 22px;
-            margin-bottom: 3px;
-            letter-spacing: 1.5px;
-        }
-        .signal-panel.compact .timer-unit {
-            font-size: 10px;
-        }
-
-        /* Signal rows – BIG/SMALL + COLOR */
-        .signal-panel.compact .signal-row {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            margin-top: 2px;
-        }
-        .signal-panel.compact .signal-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-        }
-        .signal-panel.compact .signal-label {
-            font-size: 6px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(255, 255, 255, 0.3);
-            margin-bottom: 1px;
-        }
-        .signal-panel.compact .signal-value {
-            font-size: 18px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            min-height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-        }
-
-        .signal-panel.compact .signal-value .sig-big {
-            background: linear-gradient(135deg, #00ff88, #00ffcc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 12px rgba(0, 255, 136, 0.6));
-            animation: sigPulse 0.8s ease-in-out infinite alternate;
-        }
-        .signal-panel.compact .signal-value .sig-small {
-            background: linear-gradient(135deg, #ff4466, #ff0044);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 12px rgba(255, 0, 68, 0.6));
-            animation: sigPulse 0.8s ease-in-out infinite alternate;
-        }
-
-        .signal-panel.compact .signal-value .color-green {
-            color: #00ff88;
-            text-shadow: 0 0 14px rgba(0, 255, 136, 0.7);
-        }
-        .signal-panel.compact .signal-value .color-violet {
-            color: #aa66ff;
-            text-shadow: 0 0 14px rgba(170, 102, 255, 0.7);
-        }
-        .signal-panel.compact .signal-value .color-red {
-            color: #ff0044;
-            text-shadow: 0 0 14px rgba(255, 0, 68, 0.7);
-        }
-
-        .signal-panel.compact .signal-value .sig-analyzing {
-            font-size: 9px;
-            color: #ffea00;
-            animation: analyzeBlink 0.4s infinite;
-            text-shadow: 0 0 14px rgba(255, 234, 0, 0.6);
-            letter-spacing: 1.5px;
-        }
-
-        @keyframes sigPulse {
-            0% {
-                transform: scale(1);
-            }
-            100% {
-                transform: scale(1.08);
-            }
-        }
-        @keyframes analyzeBlink {
-            50% {
-                opacity: 0.12;
-            }
-        }
-
-        .signal-panel.compact .color-dots {
-            gap: 5px;
-            margin-top: 6px;
-        }
-        .signal-panel.compact .color-dot {
-            width: 7px;
-            height: 7px;
-        }
-
-        .signal-panel.compact .server-label {
-            font-size: 5.5px;
-            margin-top: 5px;
-            letter-spacing: 1px;
-        }
-
-        .signal-panel.compact .conn-status {
-            top: 8px;
-            right: 10px;
-            width: 7px;
-            height: 7px;
-        }
-
-        /* ── APP SECTION (hidden by default) ── */
-        #appSection {
-            width: 100%;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
+        #appSection { display: none; }
 
         .live-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            margin-bottom: 5px;
-            width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 5px;
         }
-        .wifi-icon {
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-        }
+        .wifi-icon { width: 12px; height: 12px; }
         .live-badge {
-            font-size: 6px;
-            font-weight: 900;
-            background: linear-gradient(90deg, #ff0044, #ff4400);
-            color: #fff;
-            padding: 1px 6px;
-            border-radius: 5px;
-            letter-spacing: 0.8px;
-            animation: livePulse 1s ease-in-out infinite alternate;
-            text-transform: uppercase;
+            font-size: 6.5px; font-weight: 900; background: #ff0044; color: #fff;
+            padding: 1.5px 5px; border-radius: 3px; animation: livePulse 1s infinite alternate;
         }
-        @keyframes livePulse {
-            0% {
-                box-shadow: 0 0 4px rgba(255, 0, 68, 0.4);
-            }
-            100% {
-                box-shadow: 0 0 14px rgba(255, 0, 68, 0.8);
-            }
-        }
+        @keyframes livePulse { 0% { opacity: 0.55; } 100% { opacity: 1; } }
 
         .period-card {
-            width: 100%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
-            border: 1.5px solid rgba(255, 255, 255, 0.12);
-            border-radius: 10px;
-            padding: 3px 5px;
-            margin-bottom: 4px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px; padding: 3px 4px; width: 100%; margin-bottom: 5px;
         }
-        .period-label {
-            font-size: 5.5px;
-            color: rgba(255, 255, 255, 0.35);
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-        }
+        .period-label { font-size: 5.5px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; }
         .period-number {
-            font-size: 14px;
-            color: #ffee00;
-            font-weight: 900;
-            display: block;
-            margin-top: 1px;
-            text-shadow: 0 0 14px rgba(255, 238, 0, 0.5);
-            letter-spacing: 2px;
+            font-size: 14px; color: #ffee00; font-weight: 900; display: block;
+            text-shadow: 0 0 8px rgba(255, 238, 0, 0.35); letter-spacing: 1px;
         }
 
+        /* ── TIMER ── */
+        .timer-wrap { margin-bottom: 6px; }
+        .timer-bar-outer {
+            width: 100%; height: 3px; background: rgba(255,255,255,0.08);
+            border-radius: 2px; margin-bottom: 3px; overflow: hidden;
+        }
+        .timer-bar-inner {
+            height: 100%; border-radius: 2px; transition: width 0.3s linear, background 0.5s;
+            background: #00ffc8;
+        }
         .timer-display {
-            font-size: 18px;
-            font-weight: 900;
-            margin-bottom: 2px;
-            letter-spacing: 1px;
-            background: linear-gradient(180deg, #00ff88, #00cc66);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.5));
+            font-size: 30px; font-weight: 900; color: #00ff88;
+            text-shadow: 0 0 14px rgba(0, 255, 136, 0.45); line-height: 1;
         }
-        .timer-unit {
-            font-size: 8px;
-            font-weight: 700;
-            -webkit-text-fill-color: rgba(0, 255, 136, 0.5);
-        }
+        .timer-unit { font-size: 11px; margin-left: 1px; color: rgba(0, 255, 136, 0.55); }
 
+        /* ── SIGNAL ROWS ── */
         .signal-row {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            margin-top: 2px;
+            display: flex; gap: 4px; width: 100%; margin-bottom: 4px;
         }
         .signal-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
+            flex: 1; background: rgba(255,255,255,0.025); padding: 8px 2px 6px;
+            border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);
         }
         .signal-label {
-            font-size: 6px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(255, 255, 255, 0.3);
-            margin-bottom: 1px;
+            font-size: 5.5px; color: rgba(255,255,255,0.45); text-transform: uppercase;
+            display: block; margin-bottom: 3px; letter-spacing: 0.5px;
         }
         .signal-value {
-            font-size: 16px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            min-height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
+            font-size: 22px; font-weight: 900; min-height: 26px;
+            display: flex; align-items: center; justify-content: center;
+            letter-spacing: 0.5px;
         }
 
-        .signal-value .sig-big {
-            background: linear-gradient(135deg, #00ff88, #00ffcc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 12px rgba(0, 255, 136, 0.6));
-            animation: sigPulse 0.8s ease-in-out infinite alternate;
-        }
-        .signal-value .sig-small {
-            background: linear-gradient(135deg, #ff4466, #ff0044);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 12px rgba(255, 0, 68, 0.6));
-            animation: sigPulse 0.8s ease-in-out infinite alternate;
-        }
-
-        .signal-value .color-green {
+        /* ── BIG / SMALL মোটা বড় সিগন্যাল ── */
+        .sig-big {
             color: #00ff88;
-            text-shadow: 0 0 14px rgba(0, 255, 136, 0.7);
+            font-size: 32px;
+            font-weight: 950;
+            letter-spacing: 2px;
+            text-shadow:
+                0 0 10px rgba(0, 255, 136, 0.7),
+                0 0 25px rgba(0, 255, 136, 0.4),
+                0 0 50px rgba(0, 255, 136, 0.2);
+            animation: bigGlow 1.2s ease-in-out infinite alternate;
         }
-        .signal-value .color-violet {
-            color: #aa66ff;
-            text-shadow: 0 0 14px rgba(170, 102, 255, 0.7);
+        .sig-small {
+            color: #ff4466;
+            font-size: 32px;
+            font-weight: 950;
+            letter-spacing: 2px;
+            text-shadow:
+                0 0 10px rgba(255, 68, 102, 0.7),
+                0 0 25px rgba(255, 68, 102, 0.4),
+                0 0 50px rgba(255, 68, 102, 0.2);
+            animation: smallGlow 1.2s ease-in-out infinite alternate;
         }
-        .signal-value .color-red {
-            color: #ff0044;
-            text-shadow: 0 0 14px rgba(255, 0, 68, 0.7);
+        @keyframes bigGlow {
+            0% { text-shadow: 0 0 10px rgba(0,255,136,0.6), 0 0 25px rgba(0,255,136,0.3), 0 0 50px rgba(0,255,136,0.15); }
+            100% { text-shadow: 0 0 14px rgba(0,255,136,0.9), 0 0 35px rgba(0,255,136,0.5), 0 0 70px rgba(0,255,136,0.25); }
         }
-
-        .signal-value .sig-analyzing {
-            font-size: 8px;
-            color: #ffea00;
-            animation: analyzeBlink 0.4s infinite;
-            text-shadow: 0 0 14px rgba(255, 234, 0, 0.6);
-            letter-spacing: 1.5px;
-        }
-
-        .color-dots {
-            display: flex;
-            gap: 4px;
-            margin-top: 5px;
-            justify-content: center;
-        }
-        .color-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            animation: dotGlow 2s ease-in-out infinite alternate;
-        }
-        .dot-green {
-            background: #00ff88;
-            box-shadow: 0 0 5px #00ff88;
-            animation-delay: 0s;
-        }
-        .dot-red {
-            background: #ff0044;
-            box-shadow: 0 0 5px #ff0044;
-            animation-delay: 0.4s;
-        }
-        .dot-violet {
-            background: #aa66ff;
-            box-shadow: 0 0 5px #aa66ff;
-            animation-delay: 0.8s;
-        }
-        .dot-cyan {
-            background: #00ccff;
-            box-shadow: 0 0 5px #00ccff;
-            animation-delay: 1.2s;
-        }
-        .dot-yellow {
-            background: #ffee00;
-            box-shadow: 0 0 5px #ffee00;
-            animation-delay: 1.6s;
-        }
-        @keyframes dotGlow {
-            0% {
-                transform: scale(0.6);
-                opacity: 0.3;
-            }
-            100% {
-                transform: scale(1.4);
-                opacity: 1;
-            }
+        @keyframes smallGlow {
+            0% { text-shadow: 0 0 10px rgba(255,68,102,0.6), 0 0 25px rgba(255,68,102,0.3), 0 0 50px rgba(255,68,102,0.15); }
+            100% { text-shadow: 0 0 14px rgba(255,68,102,0.9), 0 0 35px rgba(255,68,102,0.5), 0 0 70px rgba(255,68,102,0.25); }
         }
 
-        .hidden {
-            display: none !important;
+        /* ── সিগন্যাল আপডেট ফ্ল্যাশ ইফেক্ট ── */
+        @keyframes signalFlash {
+            0% { transform: scale(0.6); opacity: 0; }
+            40% { transform: scale(1.15); opacity: 1; }
+            70% { transform: scale(0.95); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .sig-flash {
+            animation: signalFlash 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
-        .conn-status {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            position: absolute;
-            top: 8px;
-            right: 10px;
-            transition: background 0.3s, box-shadow 0.3s;
-            z-index: 5;
+        /* ── COLOR PREDICTION BOX ── */
+        .color-box {
+            width: 100%; border-radius: 10px; padding: 7px 4px;
+            margin-bottom: 5px; text-align: center;
+            border: 1.5px solid rgba(255,255,255,0.1);
+            transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
         }
-        .conn-online {
-            background: #00ff88;
-            box-shadow: 0 0 8px #00ff88;
+        .color-box-label {
+            font-size: 5.5px; color: rgba(255,255,255,0.5); text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 2px;
         }
-        .conn-offline {
-            background: #ff0044;
-            box-shadow: 0 0 8px #ff0044;
-            animation: analyzeBlink 0.5s infinite;
+        .color-box-value {
+            font-size: 20px; font-weight: 900; letter-spacing: 0.5px;
         }
 
-        .server-label {
-            font-size: 5px;
-            color: rgba(255, 255, 255, 0.25);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 4px;
+        .cb-green {
+            background: linear-gradient(135deg, rgba(0,255,100,0.15), rgba(0,180,70,0.08));
+            border-color: rgba(0,255,100,0.35);
+            box-shadow: 0 0 15px rgba(0,255,100,0.12), inset 0 0 15px rgba(0,255,100,0.05);
         }
-        .server-label .connected {
-            color: #00ff88;
+        .cb-green .color-box-value { color: #00ff64; text-shadow: 0 0 12px rgba(0,255,100,0.45); }
+
+        .cb-red {
+            background: linear-gradient(135deg, rgba(255,0,60,0.15), rgba(180,0,40,0.08));
+            border-color: rgba(255,0,60,0.35);
+            box-shadow: 0 0 15px rgba(255,0,60,0.12), inset 0 0 15px rgba(255,0,60,0.05);
+        }
+        .cb-red .color-box-value { color: #ff0044; text-shadow: 0 0 12px rgba(255,0,60,0.45); }
+
+        .cb-violet {
+            background: linear-gradient(135deg, rgba(170,100,255,0.15), rgba(120,60,200,0.08));
+            border-color: rgba(170,100,255,0.35);
+            box-shadow: 0 0 15px rgba(170,100,255,0.12), inset 0 0 15px rgba(170,100,255,0.05);
+        }
+        .cb-violet .color-box-value { color: #bb77ff; text-shadow: 0 0 12px rgba(170,100,255,0.45); }
+
+        .cb-green-violet {
+            background: linear-gradient(135deg, rgba(0,255,100,0.12), rgba(170,100,255,0.12));
+            border-color: rgba(100,220,180,0.35);
+            box-shadow: 0 0 15px rgba(100,220,180,0.12), inset 0 0 15px rgba(100,220,180,0.05);
+        }
+        .cb-green-violet .color-box-value {
+            color: #44ffaa; text-shadow: 0 0 12px rgba(68,255,170,0.45);
         }
 
-        /* ── DRAG HELPER ── */
-        .signal-panel.dragging {
-            transition: none !important;
-            cursor: grabbing;
+        .cb-red-violet {
+            background: linear-gradient(135deg, rgba(255,0,60,0.12), rgba(170,100,255,0.12));
+            border-color: rgba(255,80,180,0.35);
+            box-shadow: 0 0 15px rgba(255,80,180,0.12), inset 0 0 15px rgba(255,80,180,0.05);
+        }
+        .cb-red-violet .color-box-value {
+            color: #ff55bb; text-shadow: 0 0 12px rgba(255,80,180,0.45);
         }
 
-        /* ── RESPONSIVE ── */
-        @media (max-height: 700px) {
-            .signal-panel.compact {
-                width: 170px !important;
-                top: 8px !important;
-                right: 8px !important;
-                padding: 10px 8px 8px !important;
-                border-radius: 16px !important;
-            }
-            .signal-panel.compact .signal-value {
-                font-size: 15px;
-                min-height: 22px;
-            }
-            .signal-panel.compact .timer-display {
-                font-size: 18px;
-            }
-            .signal-panel.compact .period-number {
-                font-size: 14px;
-            }
-            .signal-panel.compact .color-dot {
-                width: 6px;
-                height: 6px;
-            }
-            .signal-panel.compact .live-badge {
-                font-size: 6px;
-                padding: 1px 5px;
-            }
-            .signal-panel.compact .wifi-icon {
-                width: 14px;
-                height: 14px;
-            }
-            .signal-panel.compact .period-card {
-                padding: 3px 5px;
-            }
+        .cb-analyzing {
+            background: linear-gradient(135deg, rgba(255,238,0,0.1), rgba(255,150,0,0.06));
+            border-color: rgba(255,238,0,0.3);
+            box-shadow: 0 0 12px rgba(255,238,0,0.08);
+        }
+        .cb-analyzing .color-box-value {
+            color: #ffee00; font-size: 13px; animation: blink 0.5s infinite;
         }
 
-        @media (max-height: 580px) {
-            .signal-panel.compact {
-                width: 145px !important;
-                top: 4px !important;
-                right: 4px !important;
-                padding: 8px 6px 6px !important;
-                border-radius: 14px !important;
-            }
-            .signal-panel.compact .signal-value {
-                font-size: 12px;
-                min-height: 18px;
-            }
-            .signal-panel.compact .timer-display {
-                font-size: 14px;
-            }
-            .signal-panel.compact .period-number {
-                font-size: 11px;
-            }
-            .signal-panel.compact .color-dot {
-                width: 5px;
-                height: 5px;
-            }
-            .signal-panel.compact .live-badge {
-                font-size: 5px;
-                padding: 0 4px;
-            }
-            .signal-panel.compact .wifi-icon {
-                width: 12px;
-                height: 12px;
-            }
-            .signal-panel.compact .period-card {
-                padding: 2px 4px;
-            }
-            .signal-panel.compact .server-label {
-                font-size: 4.5px;
-            }
-            .signal-panel.compact .signal-row {
-                gap: 6px;
-            }
-        }
+        .sig-analyzing { font-size: 14px; color: #ffee00; animation: blink 0.5s infinite; font-weight: 900; }
+        @keyframes blink { 50% { opacity: 0.25; } }
 
-        @media (max-width: 480px) {
-            .signal-panel.compact {
-                width: 165px !important;
-                top: 8px !important;
-                right: 8px !important;
-            }
+        /* ── NUMBER CHIPS ── */
+        .num-chips { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; margin-bottom: 2px; }
+        .num-chip {
+            width: 14px; height: 14px; border-radius: 3px; font-size: 7px;
+            font-weight: 900; display: flex; align-items: center; justify-content: center;
+            color: #fff; opacity: 0.2; transition: all 0.3s;
         }
+        .num-chip.active { opacity: 1; transform: scale(1.2); }
+        .nc-green { background: #00c853; box-shadow: 0 0 5px rgba(0,200,83,0.4); }
+        .nc-red { background: #ff1744; box-shadow: 0 0 5px rgba(255,23,68,0.4); }
+        .nc-violet { background: linear-gradient(135deg, #00c853, #aa44ff); box-shadow: 0 0 5px rgba(170,68,255,0.4); }
+        .nc-red-violet { background: linear-gradient(135deg, #ff1744, #aa44ff); box-shadow: 0 0 5px rgba(255,23,68,0.3); }
+
+        .server-label { font-size: 5px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-top: 4px; letter-spacing: 0.5px; }
+        .server-label .connected { color: #00ffc8; animation: livePulse 0.8s infinite alternate; }
+
+        .conn-status { width: 5px; height: 5px; border-radius: 50%; position: absolute; top: 7px; right: 8px; }
+        .conn-online { background: #00ffc8; box-shadow: 0 0 5px #00ffc8; }
+        .conn-offline { background: #ff0044; box-shadow: 0 0 5px #ff0044; }
+
+        .hidden { display: none !important; }
+        .signal-panel.dragging { transition: none !important; cursor: grabbing; }
     </style>
 </head>
 <body>
 
-    <!-- GAME IFRAME -->
     <iframe id="gameFrame" src="https://hgnice.cc/#/register?invitationCode=511711502736"></iframe>
 
-    <!-- FLOATING BALL LAYER -->
     <div id="particleLayer"></div>
+    <div id="offlineBanner">⚠ NO INTERNET — PANEL BLOCKED</div>
 
-    <!-- OFFLINE BANNER -->
-    <div id="offlineBanner">⚠️ NO INTERNET — SIGNAL PANEL DISABLED</div>
-
-    <!-- SIGNAL PANEL -->
     <div class="signal-panel" id="dragPanel">
         <div class="conn-status conn-online" id="connDot"></div>
 
-        <!-- LOGIN SECTION -->
         <div id="loginSection">
-            <div class="panel-title">HGZY VIP<br />Signal Panel</div>
-            <input type="password" id="passInput" placeholder="Enter Password" />
-            <button class="btn-login" id="loginBtn">Login</button>
-            <a href="https://hgnice.cc/#/register?invitationCode=511711502736" target="_blank" class="btn-telegram">Telegram</a>
+            <div class="panel-title">HGZY VIP 30S<br>PREMIUM SIGNAL</div>
+            <input type="password" id="passInput" placeholder="Enter VIP Password" />
+            <button class="btn-login" id="loginBtn">Unlock Panel</button>
         </div>
 
-        <!-- SIGNAL SECTION -->
         <div id="appSection">
             <div class="live-row">
                 <svg class="wifi-icon" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 18a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="#00ff88" />
-                    <path d="M8.46 15.54a5 5 0 017.08 0" stroke="#00ff88" stroke-width="2" stroke-linecap="round" />
-                    <path d="M5.05 12.13a9 9 0 0113.9 0" stroke="#00ff88" stroke-width="2" stroke-linecap="round" />
-                    <path d="M1.64 8.72a13 13 0 0120.72 0" stroke="#00ff88" stroke-width="2" stroke-linecap="round" />
+                    <path d="M12 18a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="#00ffc8"/>
+                    <path d="M8.46 15.54a5 5 0 017.08 0" stroke="#00ffc8" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M5.05 12.13a9 9 0 0113.9 0" stroke="#00ffc8" stroke-width="2" stroke-linecap="round"/>
                 </svg>
-                <span class="live-badge">LIVE</span>
+                <span class="live-badge">CONNECTED</span>
             </div>
 
             <div class="period-card">
-                <span class="period-label">Period</span>
+                <span class="period-label">Target Period</span>
                 <span class="period-number" id="periodID">----</span>
             </div>
 
-            <div class="timer-display">
-                <span id="timer">--</span><span class="timer-unit">s</span>
+            <div class="timer-wrap">
+                <div class="timer-bar-outer"><div class="timer-bar-inner" id="timerBar"></div></div>
+                <div class="timer-display">
+                    <span id="timer">--</span><span class="timer-unit">s</span>
+                </div>
             </div>
 
-            <!-- Signal Row: BIG/SMALL + COLOR -->
             <div class="signal-row">
                 <div class="signal-item">
-                    <span class="signal-label">BIG / SMALL</span>
+                    <span class="signal-label">Pattern</span>
                     <span class="signal-value" id="prediction">--</span>
                 </div>
                 <div class="signal-item">
-                    <span class="signal-label">Color</span>
-                    <span class="signal-value" id="colorPrediction">--</span>
+                    <span class="signal-label">Number</span>
+                    <span class="signal-value" id="numberPrediction">--</span>
                 </div>
             </div>
 
-            <div class="color-dots">
-                <div class="color-dot dot-green"></div>
-                <div class="color-dot dot-red"></div>
-                <div class="color-dot dot-violet"></div>
-                <div class="color-dot dot-cyan"></div>
-                <div class="color-dot dot-yellow"></div>
+            <div class="color-box cb-analyzing" id="colorBox">
+                <div class="color-box-label">Color Signal</div>
+                <div class="color-box-value" id="colorPrediction">WAITING...</div>
             </div>
 
-            <div class="server-label"><span class="connected">●</span> Server Connected</div>
+            <div class="num-chips" id="numChips">
+                <div class="num-chip nc-green" data-n="0">0</div>
+                <div class="num-chip nc-red" data-n="1">1</div>
+                <div class="num-chip nc-green" data-n="2">2</div>
+                <div class="num-chip nc-red" data-n="3">3</div>
+                <div class="num-chip nc-violet" data-n="4">4</div>
+                <div class="num-chip nc-red-violet" data-n="5">5</div>
+                <div class="num-chip nc-green" data-n="6">6</div>
+                <div class="num-chip nc-red" data-n="7">7</div>
+                <div class="num-chip nc-green" data-n="8">8</div>
+                <div class="num-chip nc-red" data-n="9">9</div>
+            </div>
+
+            <div class="server-label"><span class="connected">●</span> VIP AUTOMATED SERVER</div>
         </div>
     </div>
 
     <script>
-        /* ──────────────────────────────────────────────
-           FIREBASE CONFIG
-           ────────────────────────────────────────────── */
         const firebaseConfig = {
             apiKey: "AIzaSyA4MXyCyvpAL8NQ23j3TWxiszPofWInVA",
             authDomain: "wingo-ai-624fb.firebaseapp.com",
@@ -850,21 +375,14 @@
             appId: "1:266167882150:web:7f0f83606dfd4bcd8aff67"
         };
         firebase.initializeApp(firebaseConfig);
-        const dbRef = firebase.database().ref();
+        const dbRef = firebase.database().ref("hgzy_30s_panel");
 
-        /* ──────────────────────────────────────────────
-           STATE
-           ────────────────────────────────────────────── */
         let lastPeriod = null;
+        let lastSignalKey = null;
         let isRunning = false;
         let isOnline = navigator.onLine;
-        let fetchInterval = null;
-        let loopInterval = null;
-        let particleInterval = null;
+        let cachedSignal = null;
 
-        /* ──────────────────────────────────────────────
-           DOM REFS
-           ────────────────────────────────────────────── */
         const panel = document.getElementById("dragPanel");
         const loginSection = document.getElementById("loginSection");
         const appSection = document.getElementById("appSection");
@@ -872,352 +390,242 @@
         const loginBtn = document.getElementById("loginBtn");
         const periodEl = document.getElementById("periodID");
         const timerEl = document.getElementById("timer");
+        const timerBar = document.getElementById("timerBar");
         const predictionEl = document.getElementById("prediction");
+        const numberEl = document.getElementById("numberPrediction");
         const colorPredictionEl = document.getElementById("colorPrediction");
+        const colorBox = document.getElementById("colorBox");
         const offlineBanner = document.getElementById("offlineBanner");
         const connDot = document.getElementById("connDot");
         const particleLayer = document.getElementById("particleLayer");
+        const allChips = document.querySelectorAll(".num-chip");
 
-        /* ──────────────────────────────────────────────
-           DRAG STATE – persistent via localStorage
-           ────────────────────────────────────────────── */
-        let dragOffsetX = 0;
-        let dragOffsetY = 0;
-        let isDragging = false;
-        let dragStartMouseX = 0;
-        let dragStartMouseY = 0;
-        let dragStartTop = 0;
-        let dragStartRight = 0;
-
-        let panelTop = 12;
-        let panelRight = 12;
-
-        /* ──────────────────────────────────────────────
-           PERSISTENT POSITION
-           ────────────────────────────────────────────── */
-        function loadPosition() {
-            try {
-                const saved = localStorage.getItem('hgzyPanelPos');
-                if (saved) {
-                    const pos = JSON.parse(saved);
-                    if (pos.top !== undefined) {
-                        panelTop = pos.top;
-                        panelRight = pos.right;
-                    } else {
-                        dragOffsetX = pos.x || 0;
-                        dragOffsetY = pos.y || 0;
-                    }
-                    applyPosition();
-                }
-            } catch (_) { /* ignore */ }
-        }
-
-        function savePosition() {
-            try {
-                if (panel.classList.contains('compact')) {
-                    localStorage.setItem('hgzyPanelPos', JSON.stringify({
-                        top: panelTop,
-                        right: panelRight
-                    }));
-                } else {
-                    localStorage.setItem('hgzyPanelPos', JSON.stringify({
-                        x: dragOffsetX,
-                        y: dragOffsetY
-                    }));
-                }
-            } catch (_) { /* ignore */ }
-        }
+        let isDragging = false, startX, startY, startTop, startRight;
+        let panelTop = 15, panelRight = 15;
 
         function applyPosition() {
             if (panel.classList.contains('compact')) {
-                panel.style.top = panelTop + 'px';
-                panel.style.right = panelRight + 'px';
-                panel.style.left = 'auto';
-                panel.style.transform = 'none';
-            } else {
-                panel.style.transform = 'translate(calc(-50% + ' + dragOffsetX + 'px), ' + dragOffsetY + 'px)';
-                panel.style.top = '80px';
-                panel.style.left = '50%';
-                panel.style.right = 'auto';
+                panel.style.top = panelTop + "px";
+                panel.style.right = panelRight + "px";
+                panel.style.left = "auto";
+                panel.style.transform = "none";
             }
         }
+        function onDragStart(e) {
+            if (['INPUT','BUTTON','A'].includes(e.target.tagName)) return;
+            isDragging = true;
+            const cx = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+            const cy = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+            startX = cx; startY = cy; startTop = panelTop; startRight = panelRight;
+            panel.classList.add('dragging');
+        }
+        function onDragMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const cx = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+            const cy = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+            panelTop = Math.max(5, startTop + (cy - startY));
+            panelRight = Math.max(5, startRight - (cx - startX));
+            applyPosition();
+        }
+        function onDragEnd() { isDragging = false; panel.classList.remove('dragging'); }
 
-        /* ──────────────────────────────────────────────
-           ONLINE / OFFLINE
-           ────────────────────────────────────────────── */
-        function updateConnectionStatus() {
+        panel.addEventListener('mousedown', onDragStart);
+        window.addEventListener('mousemove', onDragMove);
+        window.addEventListener('mouseup', onDragEnd);
+        panel.addEventListener('touchstart', onDragStart, { passive: true });
+        window.addEventListener('touchmove', onDragMove, { passive: false });
+        window.addEventListener('touchend', onDragEnd);
+
+        function checkNet() {
             isOnline = navigator.onLine;
             if (!isOnline) {
                 offlineBanner.style.display = 'block';
                 panel.classList.add('hidden');
                 connDot.className = 'conn-status conn-offline';
-                stopIntervals();
             } else {
                 offlineBanner.style.display = 'none';
                 panel.classList.remove('hidden');
-                if (isRunning) startIntervals();
                 connDot.className = 'conn-status conn-online';
-                requestAnimationFrame(applyPosition);
             }
         }
+        window.addEventListener('online', checkNet);
+        window.addEventListener('offline', checkNet);
 
-        window.addEventListener('online', updateConnectionStatus);
-        window.addEventListener('offline', updateConnectionStatus);
-        updateConnectionStatus();
-
-        /* ──────────────────────────────────────────────
-           INTERVALS
-           ────────────────────────────────────────────── */
-        function startIntervals() {
-            stopIntervals();
-            loopInterval = setInterval(mainLoop, 1000);
-            fetchInterval = setInterval(fetchPeriodData, 2500);
-            particleInterval = setInterval(spawnBall, 400);
-        }
-
-        function stopIntervals() {
-            if (loopInterval) { clearInterval(loopInterval);
-                loopInterval = null; }
-            if (fetchInterval) { clearInterval(fetchInterval);
-                fetchInterval = null; }
-            if (particleInterval) { clearInterval(particleInterval);
-                particleInterval = null; }
-        }
-
-        /* ──────────────────────────────────────────────
-           LOGIN
-           ────────────────────────────────────────────── */
-        function handleLogin() {
+        loginBtn.addEventListener('click', () => {
             if (passInput.value.trim() === 'VIP100') {
                 loginSection.style.display = 'none';
                 appSection.style.display = 'flex';
                 panel.classList.add('compact');
-                panelTop = 12;
-                panelRight = 12;
-                applyPosition();
                 isRunning = true;
-                if (isOnline) startIntervals();
-                fetchPeriodData();
-                mainLoop();
-                savePosition();
+                applyPosition();
+                setInterval(runtimeClock, 200);
+                setInterval(syncPeriodData, 3000);
+                syncPeriodData();
             } else {
-                alert('Wrong Password!');
+                passInput.style.borderColor = '#ff0044';
+                passInput.style.animation = 'none';
+                void passInput.offsetWidth;
+                passInput.style.animation = 'shake 0.4s';
+                setTimeout(() => { passInput.style.borderColor = '#00ffc8'; }, 800);
             }
-        }
-
-        loginBtn.addEventListener('click', handleLogin);
-        passInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') handleLogin();
         });
 
-        /* ──────────────────────────────────────────────
-           FETCH PERIOD
-           ────────────────────────────────────────────── */
-        async function fetchPeriodData() {
-            if (!isOnline) return;
+        const shakeStyle = document.createElement('style');
+        shakeStyle.textContent = `@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}`;
+        document.head.appendChild(shakeStyle);
+
+        async function syncPeriodData() {
+            if (!isOnline || !isRunning) return;
             try {
-                const response = await fetch(
-                    'https://draw.ar-lottery01.com/WinGo/WinGo_30S/GetHistoryIssuePage.json?r=' + Date.now()
-                );
-                const json = await response.json();
-                if (json.data && json.data.list && json.data.list.length > 0) {
-                    lastPeriod = (BigInt(json.data.list[0].issueNumber) + 1n).toString();
+                const res = await fetch('https://draw.ar-lottery01.com/WinGo/WinGo_30S/GetHistoryIssuePage.json?r=' + Date.now());
+                const data = await res.json();
+                if (data?.data?.list?.length > 0) {
+                    let oldPeriod = lastPeriod;
+                    lastPeriod = (BigInt(data.data.list[0].issueNumber) + 1n).toString();
+                    if (oldPeriod !== lastPeriod) {
+                        cachedSignal = null;
+                        lastSignalKey = null;
+                        runtimeClock();
+                    }
                 }
-            } catch (_) { /* ignore */ }
+            } catch {
+                let oldPeriod = lastPeriod;
+                lastPeriod = Math.floor(Date.now() / 30000).toString();
+                if (oldPeriod !== lastPeriod) {
+                    cachedSignal = null;
+                    lastSignalKey = null;
+                    runtimeClock();
+                }
+            }
         }
 
-        /* ──────────────────────────────────────────────
-           SIGNAL ANALYSIS – BIG/SMALL + COLOR
-           ────────────────────────────────────────────── */
-        function analyzeSignal(period) {
+        function getNumberColor(n) {
+            if (n === 0) return { name: 'RED+VIOLET', css: 'nc-red-violet' };
+            if (n === 5) return { name: 'GREEN+VIOLET', css: 'nc-violet' };
+            if ([1, 3, 7, 9].includes(n)) return { name: 'GREEN', css: 'nc-green' };
+            return { name: 'RED', css: 'nc-red' };
+        }
+
+        function processPredictor(period) {
             let hash = 0;
-            const seed = period + 'HGZY_VIP_SIGNAL_2026';
+            let seed = period + "HGZY_VIP_CRYPTX_30S_SHA256";
             for (let i = 0; i < seed.length; i++) {
-                hash = ((hash << 13) - hash) + seed.charCodeAt(i);
-                hash = (hash << 5) | (hash >>> 27);
+                hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+                hash |= 0;
             }
+            let combined = Math.abs(Math.sin(hash * 9301 + 49297) % 1);
+            let luckyNum = Math.abs(hash) % 10;
+            let isBig = luckyNum >= 5;
+            let numColor = getNumberColor(luckyNum);
 
-            // BIG / SMALL
-            const val = Math.abs(Math.sin(hash + 0.618033988749895));
-            const val2 = Math.abs(Math.cos(hash * 0.7071067811865475));
-            const combined = (val * 0.6 + val2 * 0.4);
-            const isBig = combined > 0.48;
+            let boxClass = 'cb-analyzing';
+            let colorText = 'ANALYZING...';
+            if (numColor.name === 'GREEN') { boxClass = 'cb-green'; colorText = 'GREEN'; }
+            else if (numColor.name === 'RED') { boxClass = 'cb-red'; colorText = 'RED'; }
+            else if (numColor.name === 'RED+VIOLET') { boxClass = 'cb-red-violet'; colorText = 'RED+VIOLET'; }
+            else if (numColor.name === 'GREEN+VIOLET') { boxClass = 'cb-green-violet'; colorText = 'GREEN+VIOLET'; }
 
-            // COLOR: GREEN, VIOLET, RED
-            const colorHash = Math.abs(Math.sin(hash * 1.618033988749895 + 0.5772156649));
-            let color;
-            if (colorHash < 0.33) color = 'GREEN';
-            else if (colorHash < 0.66) color = 'VIOLET';
-            else color = 'RED';
-
-            return { isBig, color };
+            return { isBig, luckyNum, numColor, boxClass, colorText };
         }
 
-        /* ──────────────────────────────────────────────
-           MAIN LOOP
-           ────────────────────────────────────────────── */
-        function mainLoop() {
+        function highlightChip(num) {
+            allChips.forEach(c => c.classList.remove('active'));
+            const target = document.querySelector(`.num-chip[data-n="${num}"]`);
+            if (target) target.classList.add('active');
+        }
+
+        function runtimeClock() {
             if (!isRunning || !isOnline) return;
-            const now = new Date();
-            const seconds = now.getSeconds();
-            periodEl.innerText = lastPeriod ? lastPeriod.slice(-4) : '----';
 
-            let remaining = seconds < 30 ? (30 - seconds) : (60 - seconds);
-            timerEl.innerText = remaining < 10 ? '0' + remaining : remaining;
+            let now = new Date();
+            let seconds = now.getSeconds();
+            let millis = now.getMilliseconds();
+            let totalRemaining;
 
-            const isAnalyzing = (remaining <= 5 || remaining === 30 || remaining === 0);
-
-            if (isAnalyzing) {
-                predictionEl.innerHTML = '<span class="sig-analyzing">⏳</span>';
-                colorPredictionEl.innerHTML = '<span class="sig-analyzing">⏳</span>';
+            if (seconds < 30) {
+                totalRemaining = (30 - seconds) - (millis / 1000);
             } else {
-                const result = analyzeSignal(lastPeriod || '0');
+                totalRemaining = (60 - seconds) - (millis / 1000);
+            }
 
-                // BIG / SMALL
-                const bigSmallText = result.isBig ? 'BIG' : 'SMALL';
-                const bsClass = result.isBig ? 'sig-big' : 'sig-small';
-                const bsEmoji = result.isBig ? '' : '';
-                predictionEl.innerHTML = '<span class="' + bsClass + '">' + bsEmoji + ' ' + bigSmallText + '</span>';
+            let remaining = Math.max(0, totalRemaining);
+            let displaySec = Math.ceil(remaining);
+            if (displaySec > 30) displaySec = 30;
 
-                // COLOR
-                const colorText = result.color;
-                const colorClass = 'color-' + colorText.toLowerCase();
-                const colorEmoji = colorText === 'GREEN' ? '🟢' : (colorText === 'VIOLET' ? '🟣' : '🔴');
-                colorPredictionEl.innerHTML = '<span class="' + colorClass + '">' + colorEmoji + ' ' + colorText +
-                '</span>';
+            if (!lastPeriod) lastPeriod = Math.floor(Date.now() / 30000).toString();
+            periodEl.innerText = lastPeriod.slice(-5);
+
+            timerEl.innerText = displaySec < 10 ? '0' + displaySec : displaySec;
+
+            let pct = (remaining / 30) * 100;
+            timerBar.style.width = pct + '%';
+            if (remaining <= 5) {
+                timerBar.style.background = '#ff0044';
+                timerEl.style.color = '#ff0044';
+                timerEl.style.textShadow = '0 0 14px rgba(255,0,68,0.5)';
+            } else if (remaining <= 10) {
+                timerBar.style.background = '#ffee00';
+                timerEl.style.color = '#ffee00';
+                timerEl.style.textShadow = '0 0 14px rgba(255,238,0,0.45)';
+            } else {
+                timerBar.style.background = '#00ffc8';
+                timerEl.style.color = '#00ff88';
+                timerEl.style.textShadow = '0 0 14px rgba(0,255,136,0.45)';
+            }
+
+            if (remaining <= 5) {
+                predictionEl.innerHTML = '<span class="sig-analyzing">⏳ SCAN</span>';
+                numberEl.innerHTML = '<span class="sig-analyzing">⏳</span>';
+                colorPredictionEl.innerText = 'SCANNING...';
+                colorBox.className = 'color-box cb-analyzing';
+                allChips.forEach(c => c.classList.remove('active'));
+                cachedSignal = null;
+                lastSignalKey = null;
+            } else {
+                if (!cachedSignal) {
+                    cachedSignal = processPredictor(lastPeriod);
+                    highlightChip(cachedSignal.luckyNum);
+                    lastSignalKey = lastPeriod;
+                }
+                let s = cachedSignal;
+                let signalKey = s.isBig ? 'BIG' : 'SMALL';
+
+                /* সিগন্যাল আপডেট হলে ফ্ল্যাশ অ্যানিমেশন */
+                if (predictionEl.dataset.lastSig !== signalKey) {
+                    predictionEl.dataset.lastSig = signalKey;
+                    let cls = s.isBig ? 'sig-big' : 'sig-small';
+                    predictionEl.innerHTML = `<span class="${cls} sig-flash">${signalKey}</span>`;
+                    numberEl.innerHTML = `<span class="sig-flash" style="color:#fff;font-size:28px;font-weight:950">${s.luckyNum}</span>`;
+                }
+
+                colorPredictionEl.innerText = s.colorText;
+                colorBox.className = 'color-box ' + s.boxClass;
             }
         }
 
-        /* ──────────────────────────────────────────────
-           FLOATING BALLS
-           ────────────────────────────────────────────── */
-        const ballColors = [
-            { bg: 'radial-gradient(circle at 35% 35%, #00ff88, #009955)', shadow: '#00ff88' },
-            { bg: 'radial-gradient(circle at 35% 35%, #ff0066, #990033)', shadow: '#ff0066' },
-            { bg: 'radial-gradient(circle at 35% 35%, #aa66ff, #663399)', shadow: '#aa66ff' },
-            { bg: 'radial-gradient(circle at 35% 35%, #00ccff, #007799)', shadow: '#00ccff' },
-            { bg: 'radial-gradient(circle at 35% 35%, #ffee00, #998800)', shadow: '#ffee00' },
-            { bg: 'radial-gradient(circle at 35% 35%, #ff8800, #994400)', shadow: '#ff8800' },
-            { bg: 'radial-gradient(circle at 35% 35%, #ff00ff, #990099)', shadow: '#ff00ff' },
-            { bg: 'radial-gradient(circle at 35% 35%, #33ffcc, #009977)', shadow: '#33ffcc' },
-            { bg: 'radial-gradient(circle at 35% 35%, #ffcc00, #997700)', shadow: '#ffcc00' },
+        const particleColors = [
+            'radial-gradient(circle at 30% 30%, #00ffc8, #005544)',
+            'radial-gradient(circle at 30% 30%, #ff00ff, #550055)',
+            'radial-gradient(circle at 30% 30%, #ffee00, #554400)',
+            'radial-gradient(circle at 30% 30%, #00ccff, #004455)',
+            'radial-gradient(circle at 30% 30%, #ff4466, #550022)',
         ];
-
-        function spawnBall() {
+        setInterval(() => {
             if (!isOnline) return;
             const ball = document.createElement('div');
             ball.className = 'floating-ball';
-
-            const size = Math.floor(Math.random() * 14) + 6;
+            let size = Math.random() * 9 + 4;
             ball.style.width = size + 'px';
             ball.style.height = size + 'px';
-
-            ball.style.left = (Math.random() * 96 + 2) + '%';
-            ball.style.top = '-30px';
-
-            const colorSet = ballColors[Math.floor(Math.random() * ballColors.length)];
-            ball.style.background = colorSet.bg;
-            ball.style.boxShadow = '0 0 ' + (size * 0.9) + 'px ' + colorSet.shadow + ', inset 0 0 ' + (size * 0.3) +
-                'px rgba(255,255,255,0.12)';
-
-            const duration = (Math.random() * 6) + 4.5;
-            ball.style.animationDuration = duration + 's';
-
-            const drift = (Math.random() - 0.5) * 110;
-            ball.style.setProperty('--drift', drift + 'px');
-
+            ball.style.left = Math.random() * 95 + '%';
+            ball.style.top = '-20px';
+            ball.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+            ball.style.background = particleColors[Math.floor(Math.random() * particleColors.length)];
+            ball.style.animationDuration = (Math.random() * 5 + 4) + 's';
             particleLayer.appendChild(ball);
-
-            setTimeout(function() {
-                if (ball.parentNode) ball.parentNode.removeChild(ball);
-            }, duration * 1000 + 200);
-        }
-
-        /* ──────────────────────────────────────────────
-           DRAG SYSTEM
-           ────────────────────────────────────────────── */
-        function onDragStart(e) {
-            const tag = e.target.tagName;
-            if (tag === 'INPUT' || tag === 'BUTTON' || tag === 'A') return;
-            if (e.button !== undefined && e.button !== 0) return;
-
-            isDragging = true;
-            const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-
-            dragStartMouseX = clientX;
-            dragStartMouseY = clientY;
-
-            if (panel.classList.contains('compact')) {
-                dragStartTop = panelTop;
-                dragStartRight = panelRight;
-            } else {
-                dragStartOffsetX = dragOffsetX;
-                dragStartOffsetY = dragOffsetY;
-            }
-
-            panel.classList.add('dragging');
-            e.preventDefault();
-        }
-
-        function onDragMove(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-
-            const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-
-            const deltaX = clientX - dragStartMouseX;
-            const deltaY = clientY - dragStartMouseY;
-
-            if (panel.classList.contains('compact')) {
-                panelTop = Math.max(2, dragStartTop + deltaY);
-                panelRight = Math.max(2, dragStartRight - deltaX);
-                applyPosition();
-            } else {
-                dragOffsetX = dragStartOffsetX + deltaX;
-                dragOffsetY = dragStartOffsetY + deltaY;
-                applyPosition();
-            }
-            savePosition();
-        }
-
-        function onDragEnd(e) {
-            if (isDragging) {
-                isDragging = false;
-                panel.classList.remove('dragging');
-                applyPosition();
-                savePosition();
-            }
-        }
-
-        panel.addEventListener('mousedown', onDragStart);
-        window.addEventListener('mousemove', onDragMove);
-        window.addEventListener('mouseup', onDragEnd);
-
-        panel.addEventListener('touchstart', onDragStart, { passive: false });
-        window.addEventListener('touchmove', onDragMove, { passive: false });
-        window.addEventListener('touchend', onDragEnd, { passive: false });
-        window.addEventListener('touchcancel', onDragEnd, { passive: false });
-
-        /* ──────────────────────────────────────────────
-           INIT
-           ────────────────────────────────────────────── */
-        loadPosition();
-
-        if (!isOnline) {
-            panel.classList.add('hidden');
-            offlineBanner.style.display = 'block';
-        }
-
-        for (let i = 0; i < 6; i++) {
-            setTimeout(spawnBall, i * 300);
-        }
-
-        console.log('🚀 HGZY VIP Signal Panel Ready');
-        console.log('📡 Internet:', isOnline ? 'ONLINE' : 'OFFLINE');
-        console.log('🔑 Password: 123456');
-        console.log('📍 Panel at top-right corner, drag to reposition');
+            setTimeout(() => ball.remove(), 9000);
+        }, 400);
     </script>
 </body>
 </html>
